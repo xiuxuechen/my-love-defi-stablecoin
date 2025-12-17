@@ -1,0 +1,31 @@
+[profile.default]
+src = "src"
+out = "out"
+test = "test"
+script = "script"
+libs = ["lib"]
+solc = "0.8.28"
+allow_internal_expect_revert = true
+ffi = true
+
+remappings = [
+  "@openzeppelin/contracts@4.9.6/=lib/openzeppelin-contracts/contracts",
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
+  "@chainlink/=lib/chainlink-evm",
+  "forge-std/=lib/forge-std/src",
+  "foundry-devops/=lib/foundry-devops"
+]
+fs_permissions = [
+ 
+  { access = "read-write", path = "./"}
+]
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
+zksync-local = "http://127.0.0.1:8011"
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
