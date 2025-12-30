@@ -3,11 +3,11 @@ pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
 import {StdInvariant} from "forge-std/StdInvariant.sol";
-import {DeployMLSC} from "../../script/DeployMLSC.s.sol";
-import {MyLoveStableCoin} from "../../src/MyLoveStableCoin.sol";
-import {MLSCEngine} from "../../src/MLSCEngine.sol";
-import {ERC20Mock} from "../mocks/ERC20Mock.sol";
-import {HelperConfig} from "../../script/HelperConfig.s.sol";
+import {DeployMLSC} from "../../../script/DeployMLSC.s.sol";
+import {MyLoveStableCoin} from "../../../src/MyLoveStableCoin.sol";
+import {MLSCEngine} from "../../../src/MLSCEngine.sol";
+import {ERC20Mock} from "../../mocks/ERC20Mock.sol";
+import {HelperConfig} from "../../../script/HelperConfig.s.sol";
 import {ContinueOnRevertHandler} from "./ContinueOnRevertHandler.t.sol";
 
 contract ContinueOnRevertInvariantsTest is StdInvariant, Test {
@@ -49,6 +49,10 @@ contract ContinueOnRevertInvariantsTest is StdInvariant, Test {
             wbtc,
             totalWbtcDeposited
         );
+
+        console.log("wethValue:", wethValueInUsd);
+        console.log("wbtcValue:", wbtcValueInUsd);
+        console.log("mintIsCalled:", handler.mintIsCalled());
 
         assert((wethValueInUsd + wbtcValueInUsd) >= totalMintedMlsc);
     }

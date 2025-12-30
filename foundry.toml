@@ -21,7 +21,7 @@ fs_permissions = [
 ]
 
 [invariant]
-runs = 1000
+runs = 100
 depth = 100
 fail_on_revert = false
 

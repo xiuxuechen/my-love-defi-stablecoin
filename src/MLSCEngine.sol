@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {OracleLib} from "./libraries/OracleLib.sol";
 import {
     ReentrancyGuard
 } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -22,6 +23,8 @@ contract MLSCEngine is ReentrancyGuard {
     error MLSCEngine__BreaksHealthFactor(uint256 healthFactorValue);
     error MLSCEngine__HealthFactorOk();
     error MLSCEngine__HealthFactorNotImproved();
+
+    using OracleLib for AggregatorV3Interface;
 
     /**
      * --------------------常量----------------------
@@ -305,8 +308,22 @@ contract MLSCEngine is ReentrancyGuard {
         // 价值MLSC = usd价格 / mlsc价格
         //这里的usdAmountInWei传的其实是稳定币数量，但因稳定币跟美元锚定关系，当作1稳定币=1美元，故直接当价格计算
         return
-            ((usdAmountInWei * PRECISION) / uint256(price)) *
-            ADDITIONAL_FEED_PRECISION;
+            ((usdAmountInWei * PRECISION)) /
+            (uint256(price) * ADDITIONAL_FEED_PRECISION);
+    }
+
+    /**
+     * @dev 获取账户抵押物信息
+     * @param user 用户地址
+     * @return 账户中已铸的稳定币数量
+     * @return 账户中抵押物价值(USD)
+     */
+    function getAccountInformation(
+        address user
+    ) public view returns (uint256, uint256) {
+        uint256 totalDscMinted = sMLSCMinted[user];
+        uint256 collateralValueInUsd = getUserCollateralValueInUsd(user);
+        return (totalDscMinted, collateralValueInUsd);
     }
 
     /**
@@ -385,22 +402,8 @@ contract MLSCEngine is ReentrancyGuard {
         (
             uint256 totalDscMinted,
             uint256 collateralValueInUsd
-        ) = _getAccountInformation(user);
+        ) = getAccountInformation(user);
         return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
-    }
-
-    /**
-     * @dev 获取账户抵押物信息
-     * @param user 用户地址
-     * @return 账户中已铸的稳定币数量
-     * @return 账户中抵押物价值(USD)
-     */
-    function _getAccountInformation(
-        address user
-    ) internal view returns (uint256, uint256) {
-        uint256 totalDscMinted = sMLSCMinted[user];
-        uint256 collateralValueInUsd = getUserCollateralValueInUsd(user);
-        return (totalDscMinted, collateralValueInUsd);
     }
 
     /**
